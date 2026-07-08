@@ -1,0 +1,55 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>🛵 Vincular Vehículos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="form-container">
+    <h2>Datos del Vehículo (Moto / Cuadrón)</h2>
+
+    <ion-item style="margin-bottom: 15px; background: #f8fafc;">
+      <ion-label><strong>Dueño (Cédula):</strong> {{ cedulaCliente }}</ion-label>
+    </ion-item>
+
+    <div style="background: #fef08a; padding: 5px; font-size: 0.8rem; border-radius: 4px; margin-bottom: 10px;">
+      <strong>Rastreo DB:</strong> {{ listaMarcas.length }} marcas cargadas.
+    </div>
+
+    <ion-item>
+      <ion-select label="Seleccionar Marca" placeholder="Elija una" [(ngModel)]="marcaSeleccionada" (ionChange)="onMarcaChange()">
+        <ion-select-option *ngFor="let marca of listaMarcas" [value]="marca._id">
+          {{ marca.nombre }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-select label="Seleccionar Modelo" placeholder="Elija un modelo" [(ngModel)]="modeloSeleccionado" [disabled]="listaModelos.length === 0">
+        <ion-select-option *ngFor="let modelo of listaModelos" [value]="modelo._id">
+          {{ modelo.nombre }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item class="ion-margin-top">
+      <ion-input label="Placa" labelPlacement="floating" placeholder="Ej: ABC-1234" [(ngModel)]="placa"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-input label="Kilometraje Actual" type="number" labelPlacement="floating" placeholder="Ej: 5000" [(ngModel)]="kilometraje"></ion-input>
+    </ion-item>
+
+    <ion-button expand="block" color="medium" class="ion-margin-top" (click)="guardarVehiculoActual(false)">
+      ➕ Registrar Otro Vehículo para este Cliente
+    </ion-button>
+
+    <ion-button expand="block" color="success" class="ion-margin-top" (click)="guardarVehiculoActual(true)">
+      🏁 Terminar y Generar Proforma Predictiva
+    </ion-button>
+
+    <div *ngIf="resultado" class="ion-margin-top" style="padding: 10px; background: #e2e8f0; border-radius: 5px; text-align: center;">
+      <p style="margin: 0; font-weight: 500;">{{ resultado }}</p>
+    </div>
+  </div>
+</ion-content>

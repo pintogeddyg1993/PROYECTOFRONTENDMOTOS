@@ -1,0 +1,59 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>🧑 Gestión de Clientes</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  
+  <div class="search-container" style="background: #f1f5f9; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #cbd5e1;">
+    <h3 style="margin-top: 0; color: #1e293b;">🔎 Buscar Cliente Existente</h3>
+    <p style="font-size: 0.9rem; color: #64748b;">Si el cliente ya está registrado, digita su cédula para cargar sus motos:</p>
+    
+    <ion-item counter="true">
+      <ion-input label="Número de Cédula" labelPlacement="floating" placeholder="Ej: 1724918956" [(ngModel)]="cedulaBusqueda" maxlength="10"></ion-input>
+    </ion-item>
+    
+    <ion-button expand="block" color="secondary" class="ion-margin-top" (click)="buscarClientePorCedula()">
+      Verificar y Cargar Vehículos
+    </ion-button>
+  </div>
+
+  <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 25px 0;">
+
+  <div class="form-container">
+    <h3 style="color: #1e293b;">📝 Registrar Cliente Nuevo</h3>
+    
+    <ion-item>
+      <ion-input label="Cédula" labelPlacement="floating" placeholder="Ej: 1726543210" [(ngModel)]="cedula"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-input label="Nombre Completo" labelPlacement="floating" placeholder="Ej: Juan Pérez" [(ngModel)]="nombre"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-input label="Correo Electrónico" labelPlacement="floating" placeholder="Ej: juan@mail.com" [(ngModel)]="correo"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-input label="Teléfono Celular" labelPlacement="floating" placeholder="Ej: 0987654321" [(ngModel)]="telefono"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-input label="Dirección Domiciliaria" labelPlacement="floating" placeholder="Ej: Av. Universitaria, N24" [(ngModel)]="direccion"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-input label="Ciudad" labelPlacement="floating" placeholder="Ej: Quito" [(ngModel)]="ciudad"></ion-input>
+    </ion-item>
+
+    <ion-button expand="block" class="ion-margin-top" (click)="guardarCliente()">
+      Registrar Cliente Nuevo
+    </ion-button>
+
+    <div *ngIf="resultado" class="ion-margin-top" style="padding: 10px; background: #e2e8f0; border-radius: 5px; text-align: center;">
+      <p style="margin: 0; font-weight: 500;">{{ resultado }}</p>
+    </div>
+  </div>
+</ion-content>
