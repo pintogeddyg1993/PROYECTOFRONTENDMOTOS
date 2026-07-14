@@ -1,112 +1,46 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { 
-  IonHeader, IonToolbar, IonTitle, IonContent, IonItem, 
-  IonButton, IonLabel, IonCard, IonCardHeader, IonCardTitle, 
-  IonCardContent, IonTextarea, IonList, IonCheckbox
-} from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonItem, IonLabel, IonCheckbox, IonList } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-tab3',
   templateUrl: 'tab3.page.html',
-  styleUrls: ['tab3.page.scss'],
   standalone: true,
-  imports: [
-    CommonModule, NgFor, NgIf, FormsModule, 
-    IonHeader, IonToolbar, IonTitle, IonContent, IonItem, 
-    IonButton, IonLabel, IonCard, IonCardHeader, IonCardTitle, 
-    IonCardContent, IonTextarea, IonList, IonCheckbox
-  ]
+  imports: [CommonModule, NgFor, NgIf, FormsModule, IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonItem, IonLabel, IonCheckbox, IonList]
 })
 export class Tab3Page {
-  private router = inject(Router);
-
-  cedulaCliente: string = '';
-  motoDatos: any = null;
-  observacionesMecanicas: string = '';
-  
+  placa: string = '';
+  kilometraje: number = 0;
   serviciosSugeridos: any[] = [];
-  totalProforma: number = 0;
+  resultado: string = '';
+
+  private http = inject(HttpClient);
+  private router = inject(Router);
+  private URL_API = 'http://127.0.0.1:8000/api';
 
   ionViewWillEnter() {
-    this.cedulaCliente = localStorage.getItem('cedula_cliente_activo') || '';
-    const motosSesion = localStorage.getItem('motos_sesion');
-    if (motosSesion) {
-      const lista = JSON.parse(motosSesion);
-      if (lista.length > 0) {
-        this.motoDatos = lista[lista.length - 1];
-        this.generarDiagnosticoPredictivo(this.motoDatos.kilometraje);
+    this.placa = localStorage.getItem('moto_placa') || '';
+    this.kilometraje = Number(localStorage.getItem('moto_kilometraje') || '0');
+    if (this.kilometraje > 0) {
+      this.cargarEvaluacion();
+    }
+  }
+
+  cargarEvaluacion() {
+    this.http.get<any>(`${this.URL_API}/motos/evaluar-mantenimiento/?kilometraje=${this.kilometraje}`).subscribe({
+      next: (res) => {
+        // Mapeamos agregando una propiedad 'seleccionado' para control en el template
+        this.serviciosSugeridos = res.data.map((s: any) => ({ ...s, seleccionado: true }));
       }
-    }
-  }
-
-  generarDiagnosticoPredictivo(km: number) {
-    this.serviciosSugeridos = [];
-    
-    this.serviciosSugeridos.push({
-      nombre: 'Cambio de Aceite de Motor de Alta Gama & Filtro',
-      costo: 25.00,
-      seleccionado: true,
-      motivo: 'Recomendado por intervalo cíclico estándar.'
     });
-
-    if (km >= 15000) {
-      this.serviciosSugeridos.push({
-        nombre: 'Cambio de Kit de Arrastre Completo (Cadena, Piñón y Catalina)',
-        costo: 65.00,
-        seleccionado: true,
-        motivo: `Fatiga por kilometraje alto (${km} km).`
-      });
-    } else {
-      this.serviciosSugeridos.push({
-        nombre: 'Limpieza, Tensado y Lubricación extrema de Cadena',
-        costo: 8.00,
-        seleccionado: true,
-        motivo: 'Mantenimiento preventivo regular.'
-      });
-    }
-
-    if (km >= 10000) {
-      this.serviciosSugeridos.push({
-        nombre: 'Cambio de Líquido de Frenos (DOT 4) + Pastillas Delanteras',
-        costo: 30.00,
-        seleccionado: true,
-        motivo: 'Desgaste proyectado en sistema hidráulico de frenado.'
-      });
-    }
-
-    if (km >= 12000) {
-      this.serviciosSugeridos.push({
-        nombre: 'Purgado y Cambio de Líquido Refrigerante de Motor',
-        costo: 18.00,
-        seleccionado: true,
-        motivo: 'Pérdida de propiedades de disipación térmica por uso.'
-      });
-    }
-
-    if (km >= 8000) {
-      this.serviciosSugeridos.push({
-        nombre: 'Sustitución de Filtro de Aire y Bujía de Iridium',
-        costo: 22.00,
-        seleccionado: true,
-        motivo: 'Optimización de la mezcla de combustión interna.'
-      });
-    }
-
-    this.calcularTotal();
   }
 
-  calcularTotal() {
-    this.totalProforma = this.serviciosSugeridos
-      .filter(s => s.seleccionado)
-      .reduce((sum, item) => sum + item.costo, 0);
-  }
-
-  finalizarOrden() {
-    alert(`¡Orden Procesada!\nTotal: $${this.totalProforma.toFixed(2)}\nObservaciones: ${this.observacionesMecanicas}`);
-    localStorage.clear();
-    this.router.navigateByUrl('/tabs/tab1');
+  pasarAlDetalleTab4() {
+    const elegidos = this.serviciosSugeridos.filter(s => s.seleccionado);
+    localStorage.setItem('servicios_base_tab3', JSON.stringify(elegidos));
+    this.router.navigateByUrl('/tabs/tab4');
   }
 }

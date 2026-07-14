@@ -1,55 +1,81 @@
 <ion-header [translucent]="true">
   <ion-toolbar color="primary">
-    <ion-title>🛵 Vincular Vehículos</ion-title>
+    <ion-title>🏍️ Vincular Vehículos para Mantenimiento</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true" class="ion-padding">
-  <div class="form-container">
-    <h2>Datos del Vehículo (Moto / Cuadrón)</h2>
 
-    <ion-item style="margin-bottom: 15px; background: #f8fafc;">
-      <ion-label><strong>Dueño (Cédula):</strong> {{ cedulaCliente }}</ion-label>
-    </ion-item>
+  <div style="background: #fdfdfd; padding: 12px; border-radius: 6px; margin-bottom: 15px; border-bottom: 3px solid #10dc60;">
+    <h4 style="margin: 0 0 5px 0; color: #222;">Datos del Vehículo (Moto / Cuadrón)</h4>
+    <p style="margin: 0; font-size: 14px; color: #555;">
+      <strong>Dueño (Cédula):</strong> {{ cedulaCliente }}
+    </p>
+  </div>
 
-    <div style="background: #fef08a; padding: 5px; font-size: 0.8rem; border-radius: 4px; margin-bottom: 10px;">
-      <strong>Rastreo DB:</strong> {{ listaMarcas.length }} marcas cargadas.
-    </div>
-
-    <ion-item>
-      <ion-select label="Seleccionar Marca" placeholder="Elija una" [(ngModel)]="marcaSeleccionada" (ionChange)="onMarcaChange()">
-        <ion-select-option *ngFor="let marca of listaMarcas" [value]="marca._id">
-          {{ marca.nombre }}
-        </ion-select-option>
-      </ion-select>
-    </ion-item>
-
-    <ion-item>
-      <ion-select label="Seleccionar Modelo" placeholder="Elija un modelo" [(ngModel)]="modeloSeleccionado" [disabled]="listaModelos.length === 0">
-        <ion-select-option *ngFor="let modelo of listaModelos" [value]="modelo._id">
-          {{ modelo.nombre }}
-        </ion-select-option>
-      </ion-select>
-    </ion-item>
-
-    <ion-item class="ion-margin-top">
-      <ion-input label="Placa" labelPlacement="floating" placeholder="Ej: ABC-1234" [(ngModel)]="placa"></ion-input>
-    </ion-item>
-
-    <ion-item>
-      <ion-input label="Kilometraje Actual" type="number" labelPlacement="floating" placeholder="Ej: 5000" [(ngModel)]="kilometraje"></ion-input>
-    </ion-item>
-
-    <ion-button expand="block" color="medium" class="ion-margin-top" (click)="guardarVehiculoActual(false)">
-      ➕ Registrar Otro Vehículo para este Cliente
-    </ion-button>
-
-    <ion-button expand="block" color="success" class="ion-margin-top" (click)="guardarVehiculoActual(true)">
-      🏁 Terminar y Generar Proforma Predictiva
-    </ion-button>
-
-    <div *ngIf="resultado" class="ion-margin-top" style="padding: 10px; background: #e2e8f0; border-radius: 5px; text-align: center;">
-      <p style="margin: 0; font-weight: 500;">{{ resultado }}</p>
+  <div *ngIf="motosHistorial && motosHistorial.length > 0" style="margin-bottom: 20px;">
+    <p style="font-size: 13px; color: #3880ff; font-weight: bold; margin-bottom: 8px;">
+      Placas del Historial en MongoDB (Selecciona una para autocompletar):
+    </p>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+      <ion-button 
+        *ngFor="let moto of motosHistorial" 
+        size="small" 
+        color="dark" 
+        fill="outline"
+        (click)="cargarMotoDelHistorial(moto)">
+        {{ moto.placa | uppercase }}
+      </ion-button>
     </div>
   </div>
+
+  <ion-list lines="inset" style="background: transparent;">
+    
+    <ion-item>
+      <ion-label position="stacked">Seleccionar Marca</ion-label>
+      <ion-select [(ngModel)]="marcaSeleccionada" (ionChange)="onMarcaChange()" placeholder="Seleccione una marca">
+        <ion-select-option *ngFor="let m of listaMarcas" [value]="m.id || m.nombre">
+          {{ m.nombre }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Seleccionar Modelo</ion-label>
+      <ion-select [(ngModel)]="modeloSeleccionado" [disabled]="listaModelos.length === 0" placeholder="Seleccione un modelo">
+        <ion-select-option *ngFor="let mod of listaModelos" [value]="mod.id || mod.nombre">
+          {{ mod.nombre }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Placa</ion-label>
+      <ion-input type="text" [(ngModel)]="placa" placeholder="Ej: JW028B" style="text-transform: uppercase;"></ion-input>
+    </ion-item>
+
+    <ion-item style="--background: #fffdf3; border: 1px solid #ffd534; border-radius: 6px; margin-top: 10px;">
+      <ion-label position="stacked" style="color: #a47e00; font-weight: bold;">🔧 Kilometraje Actual del Taller</ion-label>
+      <ion-input type="number" [(ngModel)]="kilometraje" placeholder="Ingrese el nuevo kilometraje para esta revisión"></ion-input>
+    </ion-item>
+
+  </ion-list>
+
+  <div style="margin-top: 25px; display: flex; flex-direction: column; gap: 12px;">
+    <ion-button expand="block" color="medium" (click)="guardarVehiculoActual(false)">
+      ➕ REGISTRAR OTRO VEHÍCULO PARA ESTE CLIENTE
+    </ion-button>
+    <ion-button expand="block" color="success" (click)="guardarVehiculoActual(true)">
+      🏁 TERMINAR Y GENERAR PROFORMA PREDICTIVA
+    </ion-button>
+  </div>
+
+  <div *ngIf="resultado" style="margin-top: 15px; padding: 12px; border-radius: 5px; text-align: center; font-size: 13px; background: #f4f5f7; color: #222; border: 1px solid #ccc;">
+    {{ resultado }}
+  </div>
+
+  <div *ngIf="vehiculosIngresados.length > 0" style="margin-top: 10px; text-align: center; font-size: 12px; color: #666;">
+    Vehículos listos en esta sesión: <strong>{{ vehiculosIngresados.length }}</strong>
+  </div>
+
 </ion-content>

@@ -1,56 +1,22 @@
-<ion-header [translucent]="true">
-  <ion-toolbar color="success">
-    <ion-title>📋 Proforma Predictiva de Mantenimiento</ion-title>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>🔧 Tab 3: Selección Preventiva</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-  <div *ngIf="motoDatos">
-    <ion-card color="light">
-      <ion-card-header>
-        <ion-card-title>Datos del Vehículo Evaluado</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <p><strong>Propietario (Cédula):</strong> {{ cedulaCliente }}</p>
-        <p><strong>Placa:</strong> {{ motoDatos.placa | uppercase }}</p>
-        <p><strong>Kilometraje Registrado:</strong> {{ motoDatos.kilometraje }} Km</p>
-      </ion-card-content>
-    </ion-card>
-
-    <h3>🔧 Servicios Recomendados por Algoritmo</h3>
-    <ion-list lines="inset">
-      <ion-item *ngFor="let servicio of serviciosSugeridos">
-        <ion-checkbox [(ngModel)]="servicio.seleccionado" (ionChange)="calcularTotal()">
-          <ion-label style="margin-left: 10px;">
-            <strong>{{ servicio.nombre }}</strong>
-            <p style="color: #64748b; font-size: 0.85rem;">{{ servicio.motivo }}</p>
-          </ion-label>
-        </ion-checkbox>
-        <ion-label slot="end" color="success" class="ion-text-right">
-          <strong>${{ servicio.costo.toFixed(2) }}</strong>
-        </ion-label>
-      </ion-item>
-    </ion-list>
-
-    <h3 class="ion-margin-top">✍️ Observaciones Mecánicas Adicionales</h3>
-    <ion-item lines="none" style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px;">
-      <ion-textarea 
-        placeholder="Ej: El cliente reporta un ruido extraño en el embrague o fuga leve en el amortiguador delantero..." 
-        [(ngModel)]="observacionesMecanicas" 
-        rows="4">
-      </ion-textarea>
+  <h4>Sugerencias para Placa: {{ placa }} ({{ kilometraje }} KM)</h4>
+  <p style="color: #666; font-size: 13px;">Marque los rubros iniciales que autoriza el cliente:</p>
+  
+  <ion-list>
+    <ion-item *ngFor="let s of serviciosSugeridos">
+      <ion-checkbox [(ngModel)]="s.seleccionado" labelPlacement="end">
+        {{ s.descripcion }} <strong>(${{ s.valor.toFixed(2) }})</strong>
+      </ion-checkbox>
     </ion-item>
+  </ion-list>
 
-    <div style="background: #10b981; color: white; padding: 15px; border-radius: 8px; font-size: 1.3rem; font-weight: bold; text-align: center; margin-top: 20px;">
-      VALOR TOTAL PROFORMA: ${{ totalProforma.toFixed(2) }}
-    </div>
-
-    <ion-button expand="block" color="success" style="margin-top: 20px; font-weight: bold;" (click)="finalizarOrden()">
-      💾 Guardar Diagnóstico e Imprimir Ticket
-    </ion-button>
-  </div>
-
-  <div *ngIf="!motoDatos" style="text-align: center; margin-top: 50px;">
-    <p>⚠️ No hay ningún vehículo cargado en la sesión de análisis actualmente.</p>
-  </div>
+  <ion-button expand="block" color="success" style="margin-top: 20px;" (click)="pasarAlDetalleTab4()">
+    CONTINUAR A LIQUIDACIÓN (TAB 4)
+  </ion-button>
 </ion-content>

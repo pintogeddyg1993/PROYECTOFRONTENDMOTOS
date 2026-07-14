@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-toolbar color="success">
+    <ion-title>🧾 Tab 5: Cierre de Caja</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding" style="--background: #fdfdfd;">
+  <ion-card style="text-align: center; margin-top: 30px;">
+    <ion-card-header>
+      <ion-card-title>Finalizar y Despachar Moto</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <h2 style="font-size: 32px; color: #2e7d32; font-weight: bold;">${{ total.toFixed(2) }}</h2>
+      <p style="margin-top: 10px;">Se generará el archivo PDF interactivo y se enlazará el canal de mensajería para notificación inmediata.</p>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-button expand="block" color="success" size="large" (click)="procesarYEnviar()">
+    📥 GENERAR COMPROBANTE Y NOTIFICAR VIA WHATSAPP
+  </ion-button>
+
+  <div *ngIf="resultado" style="margin-top: 15px; text-align: center; font-weight: bold;">{{ resultado }}</div>
+</ion-content>
